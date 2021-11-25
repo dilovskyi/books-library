@@ -3,7 +3,8 @@ import { Modal } from "antd";
 import { useContext } from "react";
 import { AuthModalContext } from "../../hoc/AppContext";
 
-import SingInForm from "./AuthForm/AuthForm";
+import LoginForm from "./LoginForm/LoginForm";
+import RegistrationForm from "./RegistrationForm/RegistrationForm";
 
 function AuthModal() {
   const { state, dispatch } = useContext(AuthModalContext);
@@ -20,7 +21,7 @@ function AuthModal() {
         onCancel={closeHandler}
         footer={null}
         destroyOnClose>
-        <SingInForm />
+        {state.modalType === "signin" ? <LoginForm /> : <RegistrationForm />}
       </Modal>
     </>
   );
