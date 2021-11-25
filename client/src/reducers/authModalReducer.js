@@ -1,11 +1,11 @@
-export const authModalInitialState = { isOpen: false };
+export const authModalInitialState = { isOpen: false, modalType: "signup" };
 
 export function authModalReducer(state, action) {
   switch (action.type) {
     case "open":
-      return { isOpen: true };
+      return { isOpen: true, modalType: action.modalType };
     case "close":
-      return { isOpen: false };
+      return { ...state, isOpen: false };
     default:
       throw new Error();
   }

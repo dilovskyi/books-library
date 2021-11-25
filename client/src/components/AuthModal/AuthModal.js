@@ -13,7 +13,7 @@ function AuthModal() {
   return (
     <>
       <Modal
-        title="Basic Modal"
+        title={state.modalType}
         visible={state.isOpen}
         onOk={closeHandler}
         okText="Submit"
