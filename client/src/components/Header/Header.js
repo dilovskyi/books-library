@@ -8,7 +8,7 @@ function Header() {
   const { dispatch } = useContext(AuthModalContext);
 
   const openModalHandeler = (modalType) =>
-    dispatch({ type: "open", modalType: modalType });
+    dispatch({ type: "openModal", modalType: modalType });
 
   return (
     <PageHeader
