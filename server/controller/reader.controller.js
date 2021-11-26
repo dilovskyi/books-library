@@ -3,21 +3,16 @@ const bcrypt = require("bcrypt");
 
 class UserController {
   async createReader(req, res) {
-    const saltRounds = 10;
     const { login, gender, username, email, password, confirmPassword } =
       req.body;
 
-    let hashedPassword;
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-      bcrypt.hash(password, salt, function (err, hash) {
-        // returns hash
-        hashedPassword = hash;
-      });
-    });
+    const saltRounds = 10;
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPassword = bcrypt.hashSync(password, salt);
 
     const newPerson = await db.query(
       `INSERT INTO readers (login, gender, username, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [login, gender, username, email, password]
+      [login, gender, username, email, hashedPassword]
     );
     res.json(newPerson.rows[0]);
   }
