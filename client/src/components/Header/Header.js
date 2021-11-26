@@ -9,24 +9,21 @@ function Header() {
   const { dispatch } = useContext(AuthModalContext);
   const { userInfoState, userInfoDispatch } = useContext(UserInfoContext);
 
-  const openModalHandeler = (modalType) =>
+  const openModalHandler = (modalType) =>
     dispatch({ type: "openModal", modalType: modalType });
 
   return (
     <PageHeader
       className={styles.header}
       onBack={() => null}
-      title={
-        userInfoState.isAuthenticated
-          ? `Welcome ${userInfoState.username}`
-          : "Please create account"
-      }
+      title={userInfoState.isLogged ? `Welcome` : "Please log in account"}
       extra={
-        userInfoState.isAuthenticated ? (
+        userInfoState.isLogged ? (
           <Button
             key="3"
             data-signin
             onClick={() => {
+              localStorage.removeItem("isLogged");
               userInfoDispatch({
                 type: "isUserLogged",
                 isAuthenticated: false,
@@ -39,13 +36,23 @@ function Header() {
             <Button
               key="3"
               data-signin
-              onClick={() => openModalHandeler("signin")}>
+              onClick={() => {
+                if (localStorage.getItem("isAuthenticated")) {
+                  localStorage.setItem("isLogged", true);
+                  userInfoDispatch({
+                    type: "isUserLogged",
+                    isLogged: true,
+                  });
+                } else {
+                  openModalHandler("signin");
+                }
+              }}>
               Login
             </Button>,
             <Button
               key="2"
               data-signup
-              onClick={() => openModalHandeler("signup")}>
+              onClick={() => openModalHandler("signup")}>
               Registration
             </Button>,
           ]

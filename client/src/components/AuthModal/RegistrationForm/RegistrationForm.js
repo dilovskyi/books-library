@@ -18,9 +18,12 @@ function RegistrationForm() {
     }).then((data) => {
       const { username, login } = data;
       userInfoDispatch({ type: "setUserInfo", username, login });
-      userInfoDispatch({ type: "isUserLogged", isAuthenticated: true });
+      userInfoDispatch({ type: "isUserAuth", isAuthenticated: true });
+      userInfoDispatch({ type: "isUserLogged", isLogged: true });
       dispatch({ type: "closeModal" });
     });
+    localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem("isLogged", "true");
   };
 
   const onFinishFailed = (errorInfo) => {
