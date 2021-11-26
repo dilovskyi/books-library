@@ -1,11 +1,23 @@
 const db = require("../dbConfig");
+const bcrypt = require("bcrypt");
 
 class UserController {
   async createReader(req, res) {
-    const { gender, username, email, password, confirmPassword } = req.body;
+    const saltRounds = 10;
+    const { login, gender, username, email, password, confirmPassword } =
+      req.body;
+
+    let hashedPassword;
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      bcrypt.hash(password, salt, function (err, hash) {
+        // returns hash
+        hashedPassword = hash;
+      });
+    });
+
     const newPerson = await db.query(
-      `INSERT INTO readers (gender, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *`,
-      [gender, username, email, password]
+      `INSERT INTO readers (login, gender, username, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [login, gender, username, email, password]
     );
     res.json(newPerson.rows[0]);
   }

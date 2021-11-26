@@ -1,17 +1,26 @@
 import { useContext } from "react";
 import { AuthModalContext } from "../../../hoc/AppContext";
+import { UserInfoContext } from "../../../hoc/AppContext";
 
 import styles from "./RegistrationForm.module.scss";
-import { Form, Input, Button, Select } from "antd";
+import { Form, Input, Button } from "antd";
 
 import createReader from "../../../services/createReader";
 
 function RegistrationForm() {
   // Set modal state.isOpen = false on click Cencel button
-  const { state, dispatch } = useContext(AuthModalContext);
+  const { dispatch } = useContext(AuthModalContext);
+  const { userInfoDispatch } = useContext(UserInfoContext);
 
   const onFinish = (values) => {
-    createReader(values);
+    new Promise(async (resolve, reject) => {
+      resolve(await createReader(values));
+    }).then((data) => {
+      const { username, login } = data;
+      userInfoDispatch({ type: "setUserInfo", username, login });
+      userInfoDispatch({ type: "isUserLogged", isAuthenticated: true });
+      dispatch({ type: "closeModal" });
+    });
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -67,6 +76,13 @@ function RegistrationForm() {
           ) : null
         }
       </Form.Item> */}
+
+      <Form.Item
+        label="Login"
+        name="login"
+        rules={[{ required: true, message: "Please input your login!" }]}>
+        <Input />
+      </Form.Item>
 
       <Form.Item
         label="Username"
