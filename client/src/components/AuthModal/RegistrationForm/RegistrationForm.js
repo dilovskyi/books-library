@@ -4,12 +4,14 @@ import { AuthModalContext } from "../../../hoc/AppContext";
 import styles from "./RegistrationForm.module.scss";
 import { Form, Input, Button, Select } from "antd";
 
+import createReader from "../../../services/createReader";
+
 function RegistrationForm() {
   // Set modal state.isOpen = false on click Cencel button
   const { state, dispatch } = useContext(AuthModalContext);
 
   const onFinish = (values) => {
-    console.log("Success:", values);
+    createReader(values);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -99,7 +101,7 @@ function RegistrationForm() {
 
       <Form.Item
         label="Confirm password"
-        name="confirm-password"
+        name="confirmPassword"
         rules={[
           {
             required: true,
