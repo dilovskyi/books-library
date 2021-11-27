@@ -1,10 +1,10 @@
 const Router = require("express");
 const router = new Router();
-const userController = require("../controller/reader.controller");
+const ReaderController = require("../controller/reader.controller");
 
-router.post("/createReader", userController.createReader);
-router.get("/allReaders", userController.getAllReaders);
-router.get("/getReader/:id", userController.getOneReader);
-router.put("/updateReader/:id", userController.updateReader);
+router.post("/createReader", ReaderController.createReader);
+router.get("/allReaders", ReaderController.getAllReaders);
+router.get("/getReader/:id", ReaderController.getOneReader);
+router.put("/updateReader/:id", ReaderController.updateReader);
 
 module.exports = router;

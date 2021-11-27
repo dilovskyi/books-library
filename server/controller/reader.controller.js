@@ -1,10 +1,14 @@
 const db = require("../dbConfig");
 const bcrypt = require("bcrypt");
 
-class UserController {
+let session;
+class ReaderController {
   async createReader(req, res) {
     const { login, gender, username, email, password, confirmPassword } =
       req.body;
+
+    session = login;
+    req.session.login = login;
 
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -21,6 +25,9 @@ class UserController {
     res.json(users.rows);
   }
   async getOneReader(req, res) {
+    console.log(session);
+    console.log(req.session);
+
     const id = req.params.id;
     const user = await db.query(`SELECT * FROM readers WHERE id = $1`, [id]);
     res.json(user.rows[0]);
@@ -36,4 +43,4 @@ class UserController {
   async deleteUser(req, res) {}
 }
 
-module.exports = new UserController();
+module.exports = new ReaderController();
