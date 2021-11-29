@@ -1,29 +1,27 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthModalContext } from "../../../hoc/AppContext";
-import { UserInfoContext } from "../../../hoc/AppContext";
 
 import styles from "./RegistrationForm.module.scss";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Alert } from "antd";
 
-import createReader from "../../../services/createReader";
+import registration from "../../../services/registration";
 
 function RegistrationForm() {
   // Set modal state.isOpen = false on click Cencel button
-  const { dispatch } = useContext(AuthModalContext);
-  const { userInfoDispatch } = useContext(UserInfoContext);
+  const { authModalDispatch } = useContext(AuthModalContext);
+  const [errorMessage, setErrorMessage] = useState();
 
-  const onFinish = (values) => {
+  const onFinishHandler = (values) => {
     new Promise(async (resolve, reject) => {
-      resolve(await createReader(values));
-    }).then((data) => {
-      const { username, login } = data;
-      userInfoDispatch({ type: "setUserInfo", username, login });
-      userInfoDispatch({ type: "isUserAuth", isAuthenticated: true });
-      userInfoDispatch({ type: "isUserLogged", isLogged: true });
-      dispatch({ type: "closeModal" });
+      resolve(await registration(values, "reader/registration"));
+    }).then((res) => {
+      if (res.message) {
+        setErrorMessage(res.message);
+      } else {
+        localStorage.setItem("Authorization", res.token);
+        authModalDispatch({ type: "toggleModalType" });
+      }
     });
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("isLogged", "true");
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -38,7 +36,7 @@ function RegistrationForm() {
       initialValues={{
         remember: true,
       }}
-      onFinish={onFinish}
+      onFinish={onFinishHandler}
       onFinishFailed={onFinishFailed}
       autoComplete="off">
       {/*TODO: 
@@ -144,13 +142,15 @@ function RegistrationForm() {
               href="!"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch({ type: "toggleModalType" });
+                authModalDispatch({ type: "toggleModalType" });
               }}>
               log in!
             </a>
           </span>
         </div>
       </Form.Item>
+
+      {errorMessage && <Alert message={errorMessage} type="error" />}
     </Form>
   );
 }

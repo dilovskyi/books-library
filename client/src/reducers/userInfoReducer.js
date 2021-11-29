@@ -3,6 +3,8 @@ export const userInfoInitialState = {
   isLogged: localStorage.getItem("isLogged"),
   username: null,
   login: null,
+  id: null,
+  email: null,
 };
 
 export function userInfoReducer(state, action) {
@@ -12,7 +14,7 @@ export function userInfoReducer(state, action) {
     case "isUserLogged":
       return { ...state, isLogged: action.isLogged };
     case "setUserInfo":
-      return { ...state, username: action.username, login: action.login };
+      return { ...state, ...action.payload };
     default:
       throw new Error();
   }

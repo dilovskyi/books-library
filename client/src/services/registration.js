@@ -1,9 +1,9 @@
-async function createReader(data = {}) {
-  const url = "http://192.168.0.173:8080/api/createReader";
+async function registration(data = {}, endpoint) {
+  const url = process.env.REACT_APP_BOOKS_LIBRARY_API_URL + endpoint;
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Accept": "application/json",
+      Accept: "application/json",
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
@@ -11,4 +11,4 @@ async function createReader(data = {}) {
   return await response.json();
 }
 
-export default createReader;
+export default registration;

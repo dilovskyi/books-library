@@ -3,6 +3,6 @@ const router = new Router();
 
 const readerRouter = require("./readerRouter");
 
-router.use("/readers", readerRouter);
+router.use("/reader", readerRouter);
 
 module.exports = router;
