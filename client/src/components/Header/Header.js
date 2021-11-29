@@ -6,27 +6,31 @@ import { AuthModalContext } from "../../hoc/AppContext";
 import { UserInfoContext } from "../../hoc/AppContext";
 
 function Header() {
-  const { dispatch } = useContext(AuthModalContext);
+  const { authModalDispatch } = useContext(AuthModalContext);
   const { userInfoState, userInfoDispatch } = useContext(UserInfoContext);
 
   const openModalHandler = (modalType) =>
-    dispatch({ type: "openModal", modalType: modalType });
+    authModalDispatch({ type: "openModal", modalType: modalType });
 
   return (
     <PageHeader
       className={styles.header}
       onBack={() => null}
-      title={userInfoState.isLogged ? `Welcome` : "Please log in account"}
+      title={
+        userInfoState.isLogged
+          ? `Welcome ${userInfoState.username}`
+          : "Please log in account"
+      }
       extra={
         userInfoState.isLogged ? (
           <Button
             key="3"
             data-signin
             onClick={() => {
-              localStorage.removeItem("isLogged");
+              localStorage.removeItem("Authorization");
               userInfoDispatch({
                 type: "isUserLogged",
-                isAuthenticated: false,
+                isLogged: false,
               });
             }}>
             Logout
@@ -37,15 +41,7 @@ function Header() {
               key="3"
               data-signin
               onClick={() => {
-                if (localStorage.getItem("isAuthenticated")) {
-                  localStorage.setItem("isLogged", true);
-                  userInfoDispatch({
-                    type: "isUserLogged",
-                    isLogged: true,
-                  });
-                } else {
-                  openModalHandler("signin");
-                }
+                openModalHandler("signin");
               }}>
               Login
             </Button>,

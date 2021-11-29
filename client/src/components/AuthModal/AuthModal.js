@@ -7,21 +7,25 @@ import LoginForm from "./LoginForm/LoginForm";
 import RegistrationForm from "./RegistrationForm/RegistrationForm";
 
 function AuthModal() {
-  const { state, dispatch } = useContext(AuthModalContext);
+  const { authModalState, authModalDispatch } = useContext(AuthModalContext);
 
-  const closeHandler = () => dispatch({ type: "closeModal" });
+  const closeHandler = () => authModalDispatch({ type: "closeModal" });
 
   return (
     <>
       <Modal
-        title={state.modalType}
-        visible={state.isOpen}
+        title={authModalState.modalType}
+        visible={authModalState.isOpen}
         onOk={closeHandler}
         okText="Submit"
         onCancel={closeHandler}
         footer={null}
         destroyOnClose>
-        {state.modalType === "signin" ? <LoginForm /> : <RegistrationForm />}
+        {authModalState.modalType === "signin" ? (
+          <LoginForm />
+        ) : (
+          <RegistrationForm />
+        )}
       </Modal>
     </>
   );

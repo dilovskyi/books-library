@@ -22,8 +22,7 @@ function AppContext({ children }) {
 
   return (
     <>
-      <AuthModalContext.Provider
-        value={{ state: authModalState, dispatch: authModalDispatch }}>
+      <AuthModalContext.Provider value={{ authModalState, authModalDispatch }}>
         <UserInfoContext.Provider value={{ userInfoState, userInfoDispatch }}>
           {children}
         </UserInfoContext.Provider>
