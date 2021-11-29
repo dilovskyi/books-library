@@ -1,17 +1,21 @@
 import "./App.css";
 import AppContext from "../../hoc/AppContext";
 
+import CheckAuth from "../../hoc/CheckAuth";
+
 import AuthModal from "../AuthModal/AuthModal";
 import Header from "../Header/Header";
 
 function App() {
   return (
-    <div className="App">
-      <AppContext>
-        <AuthModal />
-        <Header />
-      </AppContext>
-    </div>
+    <AppContext>
+      <AuthModal />
+      <div className="App">
+        <CheckAuth>
+          <Header />
+        </CheckAuth>
+      </div>
+    </AppContext>
   );
 }
 
