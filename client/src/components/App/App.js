@@ -6,6 +6,8 @@ import CheckAuth from "../../hoc/CheckAuth";
 import AuthModal from "../AuthModal/AuthModal";
 import Header from "../Header/Header";
 
+import BooksList from "../BooksList/BooksList";
+
 function App() {
   return (
     <AppContext>
@@ -13,6 +15,7 @@ function App() {
       <div className="App">
         <CheckAuth>
           <Header />
+          <BooksList />
         </CheckAuth>
       </div>
     </AppContext>
