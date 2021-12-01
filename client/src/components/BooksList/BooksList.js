@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { List, Card } from "antd";
 
-const { Meta } = Card;
-
 function BooksList() {
   const [booksData, setBooksData] = useState([]);
+  const [activeAuthor, setActiveAuthor] = useState();
+  const [authorBooks, setAuthorBooks] = useState();
 
   useEffect(() => {
     fetch("http://192.168.0.173:8080/book/getAll")
@@ -15,6 +15,19 @@ function BooksList() {
         setBooksData(booksList);
       });
   }, []);
+
+  const getAllAuthorBooksHandler = (e) => {
+    const authorName = e.target.lastChild.textContent;
+    const authorQueryName = authorName.replace(" ", "_");
+    setActiveAuthor(authorName);
+    fetch(`http://192.168.0.173:8080/book/getByAuthor?name=${authorQueryName}`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((authorBooksData) => {
+        setAuthorBooks(authorBooksData);
+      });
+  };
 
   return (
     <List
@@ -27,7 +40,7 @@ function BooksList() {
         xl: 4,
         xxl: 3,
       }}
-      dataSource={booksData}
+      dataSource={authorBooks ? authorBooks : booksData}
       renderItem={(item) => (
         <List.Item>
           <Card
@@ -39,10 +52,10 @@ function BooksList() {
                 src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
               />
             }>
-            <Meta
-              description={`Author: ${item.authorName}`}
-              title={item.title}
-            />
+            <div label="Title">{item.title}</div>
+            <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
+              Author: {activeAuthor || item.authorName}
+            </div>
           </Card>
         </List.Item>
       )}
