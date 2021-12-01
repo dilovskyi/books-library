@@ -28,7 +28,7 @@ function BooksList() {
       dataSource={booksData}
       renderItem={(item) => (
         <List.Item>
-          <Card title={item.title}>Author: item</Card>
+          <Card title={`Title: ${item.title}`}>Author: {item.authorName}</Card>
         </List.Item>
       )}
     />
