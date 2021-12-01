@@ -1,0 +1,23 @@
+{
+  "name": "books-library",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm --prefix ./client run start\" \"npm --prefix ./server run dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dilovskyi/books-library.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dilovskyi/books-library/issues"
+  },
+  "homepage": "https://github.com/dilovskyi/books-library#readme",
+  "dependencies": {
+    "concurrently": "^6.4.0",
+    "env-cmd": "^10.1.0"
+  }
+}
