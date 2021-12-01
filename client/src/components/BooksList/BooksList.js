@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { List, Card } from "antd";
 
+const { Meta } = Card;
+
 function BooksList() {
   const [booksData, setBooksData] = useState([]);
 
@@ -22,13 +24,26 @@ function BooksList() {
         sm: 2,
         md: 4,
         lg: 4,
-        xl: 6,
+        xl: 4,
         xxl: 3,
       }}
       dataSource={booksData}
       renderItem={(item) => (
         <List.Item>
-          <Card title={`Title: ${item.title}`}>Author: {item.authorName}</Card>
+          <Card
+            hoverable
+            style={{ width: 350 }}
+            cover={
+              <img
+                alt="book card"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+              />
+            }>
+            <Meta
+              description={`Author: ${item.authorName}`}
+              title={item.title}
+            />
+          </Card>
         </List.Item>
       )}
     />
