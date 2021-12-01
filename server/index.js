@@ -21,23 +21,45 @@ const countryGenerator = require("./helpers/countryGenerator");
 const app = express();
 const PORT = process.env.PORT || 8090;
 
+const addFakeDataInDataBase = async () => {
+  async function getRandomAuthorId(authorsCount) {
+    const randomAuthor = await sequelize
+      .query("SELECT * FROM `authors` WHERE id = :id", {
+        replacements: { id: Math.ceil(Math.random() * authorsCount) },
+        type: sequelize.QueryTypes.SELECT,
+      })
+      .then(function (randomAuthor) {
+        return randomAuthor;
+      });
+    return randomAuthor[0].id;
+  }
+
+  new Promise((resolve, reject) => {
+    // Сreate fake authors
+    const authorsArr = authorsGenerator(5);
+    authorsArr.forEach((item) => {
+      Authors.create(item);
+    });
+    resolve(authorsArr.length);
+  }).then(async (authorsCount) => {
+    // Generate books and books_authors
+    booksGenerator(100).forEach(async (item) => {
+      const book = await Books.create(item);
+      await BooksAuthors.create({
+        bookId: book.id,
+        authorId: await getRandomAuthorId(authorsCount),
+      });
+    });
+  });
+};
+
 // Start db connection
 (async function () {
   try {
     await sequelize.sync({ force: true });
     await sequelize.authenticate();
-    app.listen(PORT, async () => {
-      console.log(`start server on port ${PORT}`);
-
-      //TODO:
-      // console.log(countriesGenerator(10));
-      for (let i = 0; i < 10; i++) {
-        const author = await Authors.create(authorsGenerator(1));
-        const book = await Books.create(booksGenerator(1));
-        BooksAuthors.create({ authorId: author.id, bookId: book.id });
-      }
-      // authorsGenerator(10).forEach((item) => Authors.create(item));
-      // booksGenerator(10).forEach((item) => Books.create(item));
+    app.listen(PORT, () => {
+      addFakeDataInDataBase();
     });
   } catch (error) {
     console.error("Unable to connect to the database:", error);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { List, Avatar } from "antd";
+import { List, Card } from "antd";
 
 function BooksList() {
   const [booksData, setBooksData] = useState([]);
@@ -16,14 +16,19 @@ function BooksList() {
 
   return (
     <List
-      itemLayout="horizontal"
+      grid={{
+        gutter: 16,
+        xs: 1,
+        sm: 2,
+        md: 4,
+        lg: 4,
+        xl: 6,
+        xxl: 3,
+      }}
       dataSource={booksData}
-      renderItem={({ title, content }) => (
+      renderItem={(item) => (
         <List.Item>
-          <List.Item.Meta
-            title={<a href="https://ant.design">{title}</a>}
-            description={content}
-          />
+          <Card title={item.title}>Author: item</Card>
         </List.Item>
       )}
     />
