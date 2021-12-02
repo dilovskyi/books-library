@@ -5,7 +5,7 @@ const booksGenerator = (count) => {
   let result;
   dream
     .schema({
-      title: () => chance.word({ length: 55 }),
+      title: () => chance.sentence({ words: 5 }),
       content: () => chance.paragraph({ sentences: 10 }),
     })
     .generateRnd(count)

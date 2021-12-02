@@ -6,8 +6,12 @@ import { authModalReducer } from "../reducers/authModalReducer";
 import { userInfoInitialState } from "../reducers/userInfoReducer";
 import { userInfoReducer } from "../reducers/userInfoReducer";
 
+import { booksInitialState } from "../reducers/booksReducer";
+import { booksReducer } from "../reducers/booksReducer";
+
 export const AuthModalContext = createContext();
 export const UserInfoContext = createContext();
+export const BooksContext = createContext();
 
 function AppContext({ children }) {
   const [authModalState, authModalDispatch] = useReducer(
@@ -20,11 +24,18 @@ function AppContext({ children }) {
     userInfoInitialState
   );
 
+  const [booksState, booksDispatch] = useReducer(
+    booksReducer,
+    booksInitialState
+  );
+
   return (
     <>
       <AuthModalContext.Provider value={{ authModalState, authModalDispatch }}>
         <UserInfoContext.Provider value={{ userInfoState, userInfoDispatch }}>
-          {children}
+          <BooksContext.Provider value={{ booksState, booksDispatch }}>
+            {children}
+          </BooksContext.Provider>
         </UserInfoContext.Provider>
       </AuthModalContext.Provider>
     </>

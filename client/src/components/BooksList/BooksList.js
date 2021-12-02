@@ -1,32 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { List, Card } from "antd";
 
+import { BooksContext } from "../../hoc/AppContext";
+
+import {
+  getAllBooksData,
+  getAllAuthorBooksData,
+} from "../../services/getBooks";
+
 function BooksList() {
-  const [booksData, setBooksData] = useState([]);
-  const [activeAuthor, setActiveAuthor] = useState();
-  const [authorBooks, setAuthorBooks] = useState();
+  const { booksState, booksDispatch } = useContext(BooksContext);
+  const { chosenAuthor, chosenAuthorBooksData, allBooksData } = booksState;
 
   useEffect(() => {
-    fetch("http://192.168.0.173:8080/book/getAll")
-      .then((res) => {
-        return res.json();
-      })
-      .then((booksList) => {
-        setBooksData(booksList);
-      });
+    (async () => {
+      booksDispatch({ type: "allBooksData", payload: await getAllBooksData() });
+    })();
   }, []);
 
-  const getAllAuthorBooksHandler = (e) => {
+  const getAllAuthorBooksHandler = async (e) => {
     const authorName = e.target.lastChild.textContent;
-    const authorQueryName = authorName.replace(" ", "_");
-    setActiveAuthor(authorName);
-    fetch(`http://192.168.0.173:8080/book/getByAuthor?name=${authorQueryName}`)
-      .then((res) => {
-        return res.json();
-      })
-      .then((authorBooksData) => {
-        setAuthorBooks(authorBooksData);
-      });
+
+    booksDispatch({
+      type: "chosenAuthorBooksData",
+      payload: await getAllAuthorBooksData(authorName),
+    });
+    booksDispatch({ type: "chosenAuthor", payload: authorName });
   };
 
   return (
@@ -40,7 +39,7 @@ function BooksList() {
         xl: 4,
         xxl: 3,
       }}
-      dataSource={authorBooks ? authorBooks : booksData}
+      dataSource={chosenAuthorBooksData ? chosenAuthorBooksData : allBooksData}
       renderItem={(item) => (
         <List.Item>
           <Card
@@ -52,9 +51,11 @@ function BooksList() {
                 src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
               />
             }>
-            <div label="Title">{item.title}</div>
+            <div label="Title">
+              <h3>{item.title}</h3>
+            </div>
             <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
-              Author: {activeAuthor || item.authorName}
+              Author: {chosenAuthor || item.authorName}
             </div>
           </Card>
         </List.Item>
