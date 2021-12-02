@@ -1,13 +1,17 @@
 import { useContext } from "react";
-import { PageHeader, Button } from "antd";
+import { PageHeader, Button, Tag } from "antd";
 import styles from "./Header.module.scss";
+
+import AuthorDropdown from "../AuthorDropdown/AuthorDropdown";
 
 import { AuthModalContext } from "../../hoc/AppContext";
 import { UserInfoContext } from "../../hoc/AppContext";
+import { BooksContext } from "../../hoc/AppContext";
 
 function Header() {
   const { authModalDispatch } = useContext(AuthModalContext);
   const { userInfoState, userInfoDispatch } = useContext(UserInfoContext);
+  const { booksState, booksDispatch } = useContext(BooksContext);
 
   const openModalHandler = (modalType) =>
     authModalDispatch({ type: "openModal", modalType: modalType });
@@ -53,8 +57,17 @@ function Header() {
             </Button>,
           ]
         )
-      }
-    />
+      }>
+      <AuthorDropdown />
+      <Tag
+        closable
+        visible={!!booksState.chosenAuthorBooksData}
+        onClose={() =>
+          booksDispatch({ type: "chosenAuthorBooksData", payload: null })
+        }>
+        {booksState.chosenAuthor}
+      </Tag>
+    </PageHeader>
   );
 }
 

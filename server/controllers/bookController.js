@@ -9,18 +9,18 @@ class BookController {
   async getByAuthor(req, res) {
     const authorName = req.query.name.replace("_", " ");
 
-    const authorId = await sequelize
-      .query("SELECT * FROM authors WHERE username = :authorName", {
+    const author = await sequelize
+      .query("SELECT id, username FROM authors WHERE username = :authorName", {
         replacements: { authorName },
         type: sequelize.QueryTypes.SELECT,
       })
-      .then(function (Id) {
-        return Id[0].id;
+      .then(function (author) {
+        return author[0];
       });
 
     const booksIdArray = await sequelize
       .query("SELECT id FROM books_authors WHERE authorId = :authorId", {
-        replacements: { authorId },
+        replacements: { authorId: author.id },
         type: sequelize.QueryTypes.SELECT,
       })
       .then(function (booksIdArray) {
@@ -38,7 +38,7 @@ class BookController {
             return book;
           });
 
-        return book[0];
+        return { ...book[0], authorName: author.username };
       })
     );
 
@@ -64,7 +64,7 @@ class BookController {
             type: sequelize.QueryTypes.SELECT,
           })
           .then(function (book) {
-            return book;
+            return book[0];
           });
 
         // Get author by id
@@ -74,10 +74,10 @@ class BookController {
             type: sequelize.QueryTypes.SELECT,
           })
           .then(function (author) {
-            return author;
+            return author[0];
           });
 
-        return Object.assign(book[0], { authorName: author[0].username });
+        return Object.assign(book, { authorName: author.username });
       })
     );
 

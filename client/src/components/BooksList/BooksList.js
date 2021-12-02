@@ -10,7 +10,7 @@ import {
 
 function BooksList() {
   const { booksState, booksDispatch } = useContext(BooksContext);
-  const { chosenAuthor, chosenAuthorBooksData, allBooksData } = booksState;
+  const { chosenAuthorBooksData, allBooksData } = booksState;
 
   useEffect(() => {
     (async () => {
@@ -39,7 +39,7 @@ function BooksList() {
         xl: 4,
         xxl: 3,
       }}
-      dataSource={chosenAuthorBooksData ? chosenAuthorBooksData : allBooksData}
+      dataSource={chosenAuthorBooksData || allBooksData}
       renderItem={(item) => (
         <List.Item>
           <Card
@@ -55,7 +55,7 @@ function BooksList() {
               <h3>{item.title}</h3>
             </div>
             <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
-              Author: {chosenAuthor || item.authorName}
+              Author: {item.authorName}
             </div>
           </Card>
         </List.Item>
