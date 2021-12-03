@@ -5,5 +5,6 @@ const BookController = require("../controllers/bookController");
 router.get("/get/:id", BookController.getOne);
 router.get("/getAll", BookController.getAll);
 router.get("/getByAuthor", BookController.getByAuthor);
+router.get("/getTopAuthors", BookController.getTopAuthors);
 
 module.exports = router;
