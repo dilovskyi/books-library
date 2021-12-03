@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { PageHeader, Button, Tag } from "antd";
 import styles from "./Header.module.scss";
 
-import AuthorDropdown from "../AuthorDropdown/AuthorDropdown";
+import AuthorsDrawer from "../AuthorsDraver/AuthorsDrawer";
 
 import { AuthModalContext } from "../../hoc/AppContext";
 import { UserInfoContext } from "../../hoc/AppContext";
@@ -58,15 +58,19 @@ function Header() {
           ]
         )
       }>
-      <AuthorDropdown />
-      <Tag
-        closable
-        visible={!!booksState.chosenAuthorBooksData}
-        onClose={() =>
-          booksDispatch({ type: "chosenAuthorBooksData", payload: null })
-        }>
-        {booksState.chosenAuthor}
-      </Tag>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
+          <Tag
+            closable
+            visible={!!booksState.chosenAuthorBooksData}
+            onClose={() =>
+              booksDispatch({ type: "chosenAuthorBooksData", payload: null })
+            }>
+            {booksState.chosenAuthor}
+          </Tag>
+        </div>
+        <AuthorsDrawer />
+      </div>
     </PageHeader>
   );
 }
