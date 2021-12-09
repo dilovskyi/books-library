@@ -1,12 +1,11 @@
-import { useEffect, useState, useContext } from "react";
-import { List, Card } from "antd";
+import { useEffect, useContext } from "react";
+import { List } from "antd";
 
 import { BooksContext } from "../../hoc/AppContext";
 
-import {
-  getAllBooksData,
-  getAllAuthorBooksData,
-} from "../../services/getBooks";
+import BookCard from "./BookCard/BookCard";
+
+import { getAllBooksData } from "../../services/getBooks";
 
 function BooksList() {
   const { booksState, booksDispatch } = useContext(BooksContext);
@@ -17,16 +16,6 @@ function BooksList() {
       booksDispatch({ type: "allBooksData", payload: await getAllBooksData() });
     })();
   }, []);
-
-  const getAllAuthorBooksHandler = async (e) => {
-    const authorName = e.target.lastChild.textContent;
-
-    booksDispatch({
-      type: "chosenAuthorBooksData",
-      payload: await getAllAuthorBooksData(authorName),
-    });
-    booksDispatch({ type: "chosenAuthor", payload: authorName });
-  };
 
   return (
     <List
@@ -42,22 +31,7 @@ function BooksList() {
       dataSource={chosenAuthorBooksData || allBooksData}
       renderItem={(item) => (
         <List.Item>
-          <Card
-            hoverable
-            style={{ width: 350 }}
-            cover={
-              <img
-                alt="book card"
-                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-              />
-            }>
-            <div label="Title">
-              <h3>{item.title}</h3>
-            </div>
-            <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
-              Author: {item.authorName}
-            </div>
-          </Card>
+          <BookCard item={item} />
         </List.Item>
       )}
     />
