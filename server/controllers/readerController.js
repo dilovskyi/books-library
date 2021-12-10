@@ -1,9 +1,10 @@
 require("dotenv").config();
-const db = require("../dbConfig");
+const sequelize = require("../dbConfig");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const ApiError = require("../error/ApiError");
 const Readers = require("../models/readers");
+const ReaderHistory = require("../models/readers_histories");
 
 const generateJwt = (id, login, username, email) => {
   return jwt.sign({ id, login, username, email }, process.env.SECRET_KEY, {
@@ -74,6 +75,37 @@ class ReaderController {
       req.reader.email
     );
     res.json({ token });
+  }
+
+  async readerHistory(req, res) {
+    const readerId = req.query.reader;
+    let query = null;
+    if (readerId) {
+      query = `SELECT * from readers_histories WHERE readerId = ${readerId}`;
+    } else {
+      query = "SELECT * from readers_histories";
+    }
+    const readerBooks = await sequelize.query(query, {
+      type: sequelize.QueryTypes.SELECT,
+    });
+
+    res.json(readerBooks);
+  }
+
+  async reserveBook(req, res) {
+    const { readerId, bookId } = req.body;
+
+    // await sequelize.query(
+    //   "INSERT INTO readers_histories (createdAt updatedAt, bookId, readerId) VALUES (1,1,1,3)"
+    // );
+
+    await ReaderHistory.create({
+      readerId,
+      bookId,
+      readingStatus: "true",
+    });
+
+    res.json(req.body);
   }
 }
 

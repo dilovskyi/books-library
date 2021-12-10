@@ -7,8 +7,8 @@ const Genres = require("./genres");
 const Authors = require("./authors");
 
 const Readers = require("./readers");
-const ReadersFavorites = require("./readersFavorites");
-const ReadersHistories = require("./readersHistories");
+const ReadersFavorites = require("./readers_favorites");
+const ReadersHistory = require("./readers_histories");
 
 const Books = require("./books");
 const BooksAuthors = require("./booksAuthors");
@@ -30,12 +30,16 @@ Books.belongsToMany(Genres, { through: BooksGenres });
 Genres.belongsToMany(Books, { through: BooksGenres });
 
 Books.hasMany(ReadersFavorites);
-Books.hasMany(ReadersHistories);
 
 // Readers
 Readers.belongsTo(Countries);
+Books.hasMany(ReadersHistory);
+
 Readers.hasMany(ReadersFavorites);
-Readers.hasMany(ReadersHistories);
+Readers.hasMany(ReadersHistory);
+
+ReadersHistory.belongsTo(Readers);
+ReadersHistory.belongsTo(Books);
 
 module.exports = {
   Countries,
@@ -43,7 +47,7 @@ module.exports = {
   Authors,
   Readers,
   ReadersFavorites,
-  ReadersHistories,
+  ReadersHistory,
   Books,
   BooksAuthors,
   BooksGenres,

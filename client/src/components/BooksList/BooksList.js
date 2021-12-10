@@ -30,7 +30,7 @@ function BooksList() {
       }}
       dataSource={chosenAuthorBooksData || allBooksData}
       renderItem={(item) => (
-        <List.Item>
+        <List.Item id={item.id}>
           <BookCard item={item} />
         </List.Item>
       )}
