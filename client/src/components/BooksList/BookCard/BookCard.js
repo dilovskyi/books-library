@@ -1,5 +1,7 @@
-import { useContext } from "react";
-import { Card, Button } from "antd";
+import { useContext, useState } from "react";
+import { Card, Button, Alert } from "antd";
+
+import styled from "./BookCard.module.scss";
 
 import { BooksContext, UserInfoContext } from "../../../hoc/AppContext";
 
@@ -9,6 +11,10 @@ import { reserveBook } from "../../../services/reserveBook";
 function BookCard({ item }) {
   const { booksDispatch } = useContext(BooksContext);
   const { userInfoState } = useContext(UserInfoContext);
+
+  const [alertType, setAlertType] = useState();
+  const [userAlertText, setUserAlertText] = useState("");
+
   const getAllAuthorBooksHandler = async (e) => {
     const authorName = e.target.lastChild.textContent;
 
@@ -34,41 +40,55 @@ function BookCard({ item }) {
       .then((res) => {
         return res.json();
       })
-      .then((data) => console.log(data));
+      .then((data) => {
+        if (data.message) {
+          setUserAlertText(data.message);
+          setAlertType("error");
+        } else {
+          setUserAlertText("You successfully took the book");
+          setAlertType("info");
+        }
+      });
   }
 
   return (
     <>
       <Card
         hoverable
-        style={{ width: 350 }}
+        className={styled.card}
         cover={
           <img
             alt="book card"
             src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
           />
         }>
+        {userAlertText && (
+          <Alert
+            showIcon
+            description={userAlertText}
+            type={alertType}
+            className={styled.alert}
+          />
+        )}
         <div label="Title">
           <h3>{item.title}</h3>
         </div>
         <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
           Author: {item.authorName}
         </div>
-        <Button
-          onClick={reserveBookHandler}
-          type="primary"
-          shape="round"
-          size="small"
-          data-book-id={item.id}>
-          Read Book
-        </Button>
-        <Button
-          type="primary"
-          shape="round"
-          size="small"
-          data-book-id={item.id}>
-          Reserve book
-        </Button>
+        <br />
+        {alertType === "error" ? (
+          <a href="#">Notify when it appears</a>
+        ) : (
+          <Button
+            onClick={reserveBookHandler}
+            type="primary"
+            shape="round"
+            size="small"
+            data-book-id={item.id}>
+            Read Book
+          </Button>
+        )}
       </Card>
     </>
   );

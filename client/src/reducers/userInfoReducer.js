@@ -5,6 +5,7 @@ export const userInfoInitialState = {
   login: null,
   id: null,
   email: null,
+  userHistory: [],
 };
 
 export function userInfoReducer(state, action) {
@@ -15,6 +16,12 @@ export function userInfoReducer(state, action) {
       return { ...state, isLogged: action.isLogged };
     case "setUserInfo":
       return { ...state, ...action.payload };
+    case "initUserHistory":
+      return { ...state, userHistory: action.payload };
+    // case "setUserHistory":
+    //   const newHistory = state.userHistory;
+    //   newHistory.push(action.payload);
+    //   return { ...state, userHistory: newHistory };
     default:
       throw new Error();
   }

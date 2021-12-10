@@ -79,33 +79,46 @@ class ReaderController {
 
   async readerHistory(req, res) {
     const readerId = req.query.reader;
-    let query = null;
-    if (readerId) {
-      query = `SELECT * from readers_histories WHERE readerId = ${readerId}`;
-    } else {
-      query = "SELECT * from readers_histories";
-    }
-    const readerBooks = await sequelize.query(query, {
+
+    let query = `SELECT readers_histories.readingStatus, readers_histories.createdAt, readers_histories.updatedAt, readers_histories.bookId, readers_histories.readerId, books.title FROM readers_histories JOIN books ON books.id = readers_histories.bookId`;
+
+    const allBooks = await sequelize.query(query, {
       type: sequelize.QueryTypes.SELECT,
     });
 
-    res.json(readerBooks);
+    const currentUserBooks = allBooks.filter(
+      (item) => +item.readerId === +readerId
+    );
+
+    res.json(currentUserBooks);
   }
 
-  async reserveBook(req, res) {
+  async reserveBook(req, res, next) {
     const { readerId, bookId } = req.body;
 
-    // await sequelize.query(
-    //   "INSERT INTO readers_histories (createdAt updatedAt, bookId, readerId) VALUES (1,1,1,3)"
-    // );
+    const allBooks = await sequelize.query(
+      "SELECT * FROM readers_histories WHERE bookId = :bookId",
+      {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: { bookId },
+      }
+    );
 
-    await ReaderHistory.create({
+    const isBookInRead = allBooks.find(
+      (item) => item.readingStatus === "inRead"
+    );
+
+    if (isBookInRead) {
+      return next(ApiError.badRequest("Book already in use"));
+    }
+
+    const book = await ReaderHistory.create({
       readerId,
       bookId,
-      readingStatus: "true",
+      readingStatus: "inRead",
     });
 
-    res.json(req.body);
+    res.json(book);
   }
 }
 

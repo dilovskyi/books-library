@@ -3,6 +3,7 @@ import { PageHeader, Button, Tag } from "antd";
 import styles from "./Header.module.scss";
 
 import AuthorsDrawer from "../AuthorsDraver/AuthorsDrawer";
+import ReaderProfile from "../ReaderProfile/ReaderProfile";
 
 import { AuthModalContext } from "../../hoc/AppContext";
 import { UserInfoContext } from "../../hoc/AppContext";
@@ -27,18 +28,21 @@ function Header() {
       }
       extra={
         userInfoState.isLogged ? (
-          <Button
-            key="3"
-            data-signin
-            onClick={() => {
-              localStorage.removeItem("Authorization");
-              userInfoDispatch({
-                type: "isUserLogged",
-                isLogged: false,
-              });
-            }}>
-            Logout
-          </Button>
+          <div>
+            <Button
+              key="3"
+              data-signin
+              onClick={() => {
+                localStorage.removeItem("Authorization");
+                userInfoDispatch({
+                  type: "isUserLogged",
+                  isLogged: false,
+                });
+              }}>
+              Logout
+            </Button>
+            <ReaderProfile />
+          </div>
         ) : (
           [
             <Button
