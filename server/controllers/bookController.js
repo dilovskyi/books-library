@@ -97,7 +97,23 @@ class BookController {
             return author[0];
           });
 
-        return Object.assign(book, { authorName: author.username });
+        const readingStatus = await sequelize
+          .query(
+            "SELECT readingStatus FROM readers_histories WHERE bookId = :bookId",
+            {
+              replacements: { bookId },
+              type: sequelize.QueryTypes.SELECT,
+            }
+          )
+          .then(function (status) {
+            return status[0];
+          });
+
+        return {
+          ...book,
+          ...readingStatus,
+          authorName: author.username,
+        };
       })
     );
 

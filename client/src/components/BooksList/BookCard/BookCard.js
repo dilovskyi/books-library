@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Card, Button, Alert } from "antd";
+import { Card, Button, Result } from "antd";
 
 import styled from "./BookCard.module.scss";
 
@@ -12,8 +12,10 @@ function BookCard({ item }) {
   const { booksDispatch } = useContext(BooksContext);
   const { userInfoState } = useContext(UserInfoContext);
 
-  const [alertType, setAlertType] = useState();
-  const [userAlertText, setUserAlertText] = useState("");
+  const [readingStatus, setReadingStatus] = useState(item.readingStatus);
+
+  const [resultStatus, setResultStatus] = useState();
+  const [resultText, setResultText] = useState("");
 
   const getAllAuthorBooksHandler = async (e) => {
     const authorName = e.target.lastChild.textContent;
@@ -42,14 +44,24 @@ function BookCard({ item }) {
       })
       .then((data) => {
         if (data.message) {
-          setUserAlertText(data.message);
-          setAlertType("error");
+          setResultText(data.message);
+          setResultStatus("error");
         } else {
-          setUserAlertText("You successfully took the book");
-          setAlertType("info");
+          setResultText("You successfully took the book");
+          setResultStatus("success");
+          setReadingStatus("inRead");
         }
       });
   }
+
+  async function subscribeOnBookHandler(event) {
+    console.log("subscribe");
+  }
+
+  const cardButtonHandler =
+    !readingStatus || readingStatus === "readyForRead"
+      ? reserveBookHandler
+      : subscribeOnBookHandler;
 
   return (
     <>
@@ -62,14 +74,6 @@ function BookCard({ item }) {
             src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
           />
         }>
-        {userAlertText && (
-          <Alert
-            showIcon
-            description={userAlertText}
-            type={alertType}
-            className={styled.alert}
-          />
-        )}
         <div label="Title">
           <h3>{item.title}</h3>
         </div>
@@ -77,17 +81,31 @@ function BookCard({ item }) {
           Author: {item.authorName}
         </div>
         <br />
-        {alertType === "error" ? (
-          <a href="#">Notify when it appears</a>
-        ) : (
-          <Button
-            onClick={reserveBookHandler}
-            type="primary"
-            shape="round"
-            size="small"
-            data-book-id={item.id}>
-            Read Book
-          </Button>
+
+        <Button
+          onClick={(e) => {
+            cardButtonHandler(e);
+          }}
+          type="primary"
+          shape="round"
+          size="small"
+          data-book-id={item.id}>
+          {!readingStatus || readingStatus === "readyForRead"
+            ? "Read"
+            : "Inform when appear"}
+        </Button>
+
+        {resultStatus && (
+          <Result
+            className={styled.resultBanner}
+            status={resultStatus}
+            title={resultText}
+            // extra={
+            //   <Button type="primary" key="console">
+            //     Go Console
+            //   </Button>
+            // }
+          />
         )}
       </Card>
     </>
