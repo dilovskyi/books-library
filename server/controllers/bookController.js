@@ -109,9 +109,23 @@ class BookController {
             return status[0];
           });
 
+        const readerId = req.query.reader || 1;
+        const currentUserReadingStatus = await sequelize
+          .query(
+            "SELECT readingStatus as userReadingStatus FROM readers_histories WHERE bookId = :bookId and readerId = :readerId",
+            {
+              replacements: { bookId, readerId },
+              type: sequelize.QueryTypes.SELECT,
+            }
+          )
+          .then(function (status) {
+            return status[0];
+          });
+
         return {
           ...book,
           ...readingStatus,
+          ...currentUserReadingStatus,
           authorName: author.username,
         };
       })

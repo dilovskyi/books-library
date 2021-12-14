@@ -120,6 +120,18 @@ class ReaderController {
 
     res.json(book);
   }
+
+  async subscribeOnBook(req, res) {
+    const { readerId, bookId } = req.body;
+
+    const book = await ReaderHistory.create({
+      readerId,
+      bookId,
+      readingStatus: "waitingForRead",
+    });
+
+    res.json(book);
+  }
 }
 
 module.exports = new ReaderController();

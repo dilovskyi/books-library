@@ -56,7 +56,8 @@ const addFakeDataInDataBase = async () => {
 // Start db connection
 (async function () {
   try {
-    await sequelize.sync({ force: true });
+    // await sequelize.sync({ force: true });
+    await sequelize.sync();
     await sequelize.authenticate();
     app.listen(PORT, () => {
       addFakeDataInDataBase();

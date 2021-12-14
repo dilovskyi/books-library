@@ -1,6 +1,6 @@
 export const userInfoInitialState = {
   isAuthenticated: false,
-  isLogged: localStorage.getItem("isLogged"),
+  isLogged: async () => await localStorage.getItem("isLogged"),
   username: null,
   login: null,
   id: null,

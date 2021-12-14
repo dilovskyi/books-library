@@ -9,5 +9,6 @@ router.get("/checkAuth", authMiddleware, ReaderController.checkAuth);
 
 router.get("/readerHistory", ReaderController.readerHistory);
 router.post("/reserveBook", ReaderController.reserveBook);
+router.post("/subscribe", ReaderController.subscribeOnBook);
 
 module.exports = router;

@@ -7,14 +7,18 @@ import { BooksContext, UserInfoContext } from "../../../hoc/AppContext";
 
 import { getAllAuthorBooksData } from "../../../services/getBooks";
 import { reserveBook } from "../../../services/reserveBook";
+import { subscribeOnBook } from "../../../services/subscribeOnBook";
 
 function BookCard({ item }) {
   const { booksDispatch } = useContext(BooksContext);
   const { userInfoState } = useContext(UserInfoContext);
 
   const [readingStatus, setReadingStatus] = useState(item.readingStatus);
+  const [userReadingStatus, setUserReadingStatus] = useState(
+    item.userReadingStatus || false
+  );
 
-  const [resultStatus, setResultStatus] = useState();
+  const [resultStatus, setResultStatus] = useState("");
   const [resultText, setResultText] = useState("");
 
   const getAllAuthorBooksHandler = async (e) => {
@@ -50,18 +54,40 @@ function BookCard({ item }) {
           setResultText("You successfully took the book");
           setResultStatus("success");
           setReadingStatus("inRead");
+          setUserReadingStatus("inRead");
         }
       });
   }
 
   async function subscribeOnBookHandler(event) {
-    console.log("subscribe");
+    let button = null;
+
+    if (event.target.tagName !== "BUTTON") {
+      button = event.target.parentNode;
+    } else {
+      button = event.target;
+    }
+
+    const reservedBookId = button.getAttribute("data-book-id");
+
+    subscribeOnBook(reservedBookId, userInfoState.id)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        if (data.message) {
+          setResultText(data.message);
+          setResultStatus("error");
+        } else {
+          setResultText("You successfully subscribe");
+          setResultStatus("info");
+          setReadingStatus("waitingForRead");
+        }
+      });
   }
 
   const cardButtonHandler =
-    !readingStatus || readingStatus === "readyForRead"
-      ? reserveBookHandler
-      : subscribeOnBookHandler;
+    readingStatus === "inRead" ? subscribeOnBookHandler : reserveBookHandler;
 
   return (
     <>
@@ -107,6 +133,32 @@ function BookCard({ item }) {
             // }
           />
         )}
+
+        {userReadingStatus ? (
+          <Result
+            className={styled.resultBanner}
+            status="info"
+            title="You redding this book now"
+            extra={
+              <>
+                <div label="Title">
+                  <h3>{item.title}</h3>
+                </div>
+                <div
+                  label="Author"
+                  onClick={(e) => getAllAuthorBooksHandler(e)}>
+                  Author: {item.authorName}
+                </div>
+                <Button
+                  type="primary"
+                  block
+                  className={styled.resultDescription}>
+                  Primary
+                </Button>
+              </>
+            }
+          />
+        ) : null}
       </Card>
     </>
   );
