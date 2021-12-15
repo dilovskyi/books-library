@@ -1,7 +1,7 @@
 export async function getAllBooksData(readerId) {
   console.log(readerId);
   const data = await fetch(
-    `http://192.168.0.173:8080/book/getAll?reader="${readerId}"`
+    `http://192.168.0.173:8080/book/getAll?reader=${readerId}`
   )
     .then((res) => {
       return res.json();
