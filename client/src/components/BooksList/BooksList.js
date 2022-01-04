@@ -32,16 +32,20 @@ function BooksList() {
     })();
   }, [userInfoState]);
 
+  useEffect(() => {
+    (async () => {
+      await getBooksDataByPage(userInfoState.id, listPage).then((data) => {
+        console.log(data);
+        setCurrentPageData(data);
+      });
+    })();
+  }, [listPage]);
+
   const setCurrentPageHandler = async (currentPage) => {
     setListPage(currentPage);
-
-    await getBooksDataByPage(userInfoState.id, currentPage).then((data) => {
-      console.log(data);
-      setCurrentPageData(data);
-    });
   };
 
-  const actualData = currentPageData || chosenAuthorBooksData || allBooksData;
+  const actualData = chosenAuthorBooksData || allBooksData;
 
   return (
     <>
@@ -49,7 +53,7 @@ function BooksList() {
         <>
           <PagePagination
             defaultPage={listPage}
-            dataLength={allBooksData.length}
+            dataLength={actualData.length}
             onChangeHandler={setCurrentPageHandler}
           />
           <List
@@ -62,7 +66,7 @@ function BooksList() {
               xl: 4,
               xxl: 3,
             }}
-            dataSource={actualData}
+            dataSource={currentPageData || actualData}
             renderItem={(item) => (
               <List.Item id={item.id}>
                 <BookCard item={item} />

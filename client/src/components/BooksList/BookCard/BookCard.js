@@ -104,7 +104,7 @@ function BookCard({ item }) {
           <h3>{item.title}</h3>
         </div>
         <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
-          Author: {item.authorName}
+          Author: {item.username}
         </div>
         <br />
 
@@ -147,7 +147,7 @@ function BookCard({ item }) {
                 <div
                   label="Author"
                   onClick={(e) => getAllAuthorBooksHandler(e)}>
-                  Author: {item.authorName}
+                  Author: {item.username}
                 </div>
                 <Button
                   type="primary"
