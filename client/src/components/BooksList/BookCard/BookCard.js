@@ -5,7 +5,7 @@ import styled from "./BookCard.module.scss";
 
 import { BooksContext, UserInfoContext } from "../../../hoc/AppContext";
 
-import { getAllAuthorBooksData } from "../../../services/getBooks";
+import { getAuthorAllBooksData } from "../../../services/getBooks";
 import { reserveBook } from "../../../services/reserveBook";
 import { subscribeOnBook } from "../../../services/subscribeOnBook";
 
@@ -26,7 +26,7 @@ function BookCard({ item }) {
 
     booksDispatch({
       type: "chosenAuthorBooksData",
-      payload: await getAllAuthorBooksData(authorName),
+      payload: await getAuthorAllBooksData(authorName),
     });
     booksDispatch({ type: "chosenAuthor", payload: authorName });
   };
@@ -153,7 +153,7 @@ function BookCard({ item }) {
                   type="primary"
                   block
                   className={styled.resultDescription}>
-                  Primary
+                  Return a book
                 </Button>
               </>
             }

@@ -133,6 +133,18 @@ class BookController {
 
     res.json(booksData.flat());
   }
+
+  async getByPage(req, res) {
+    const currentPage = req.query.page;
+    const book = await sequelize.query(
+      `SELECT * FROM books LIMIT ${currentPage - 1 + "0"},10`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    res.json(book);
+  }
 }
 
 module.exports = new BookController();
