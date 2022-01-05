@@ -8,6 +8,7 @@ import BookCard from "./BookCard/BookCard";
 import PagePagination from "../PagePagination/PagePagination";
 
 import { getAllBooksData, getBooksDataByPage } from "../../services/getBooks";
+import { getBooksReadingStatus } from "../../services/getBooksReadingStatus";
 
 function BooksList() {
   const { booksState, booksDispatch } = useContext(BooksContext);
@@ -15,37 +16,46 @@ function BooksList() {
 
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [listPage, setListPage] = useState(1);
-  const [currentPageData, setCurrentPageData] = useState();
 
-  const { chosenAuthorBooksData, allBooksData } = booksState;
+  const { chosenAuthorBooksData, allBooksData, currentPageData } = booksState;
 
   //FIXME:
   useEffect(() => {
-    (async () => {
-      if (userInfoState.id) {
+    if (userInfoState.id) {
+      (async () => {
         booksDispatch({
           type: "allBooksData",
           payload: await getAllBooksData(userInfoState.id),
         });
+
+        booksDispatch({
+          type: "currentPageData",
+          payload: await getBooksDataByPage(userInfoState.id, listPage),
+        });
+
         setLoadingStatus(true);
-      }
-    })();
-  }, [userInfoState]);
+      })();
+    }
+  }, [booksDispatch, listPage, userInfoState]);
 
   useEffect(() => {
-    (async () => {
-      await getBooksDataByPage(userInfoState.id, listPage).then((data) => {
-        console.log(data);
-        setCurrentPageData(data);
-      });
-    })();
-  }, [listPage]);
+    if (currentPageData.length) {
+      (async () => {
+        const booksId = currentPageData.map((book) => book.id);
+        booksDispatch({
+          type: "currentPageDataReadingStatus",
+          payload: await getBooksReadingStatus(booksId),
+        });
+      })();
+    }
+  }, [booksDispatch, currentPageData]);
 
   const setCurrentPageHandler = async (currentPage) => {
     setListPage(currentPage);
   };
 
-  const actualData = chosenAuthorBooksData || allBooksData;
+  const actualDataLenght = (chosenAuthorBooksData || allBooksData).length;
+  const actualData = chosenAuthorBooksData || currentPageData;
 
   return (
     <>
@@ -53,7 +63,7 @@ function BooksList() {
         <>
           <PagePagination
             defaultPage={listPage}
-            dataLength={actualData.length}
+            dataLength={actualDataLenght}
             onChangeHandler={setCurrentPageHandler}
           />
           <List
@@ -66,7 +76,7 @@ function BooksList() {
               xl: 4,
               xxl: 3,
             }}
-            dataSource={currentPageData || actualData}
+            dataSource={actualData}
             renderItem={(item) => (
               <List.Item id={item.id}>
                 <BookCard item={item} />

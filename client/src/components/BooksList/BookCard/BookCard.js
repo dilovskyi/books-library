@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Card, Button, Result } from "antd";
 
 import styled from "./BookCard.module.scss";
@@ -10,16 +10,41 @@ import { reserveBook } from "../../../services/reserveBook";
 import { subscribeOnBook } from "../../../services/subscribeOnBook";
 
 function BookCard({ item }) {
-  const { booksDispatch } = useContext(BooksContext);
+  const { booksState, booksDispatch } = useContext(BooksContext);
   const { userInfoState } = useContext(UserInfoContext);
 
-  const [readingStatus, setReadingStatus] = useState(item.readingStatus);
-  const [userReadingStatus, setUserReadingStatus] = useState(
-    item.userReadingStatus || false
-  );
+  const [bookIdFromHistory, setBookIdFromHistory] = useState();
+  const [resultStatus, setResultStatus] = useState();
+  const [resultText, setResultText] = useState(" ");
+  const [buttonText, setButtonText] = useState(" ");
 
-  const [resultStatus, setResultStatus] = useState("");
-  const [resultText, setResultText] = useState("");
+  //FIXME:
+  useEffect(() => {
+    const { currentPageDataReadingStatus } = booksState;
+
+    const bookInHistory = currentPageDataReadingStatus.find(
+      (bookOnThePage) => bookOnThePage?.bookId === item.id
+    );
+
+    if (bookInHistory) {
+      setBookIdFromHistory(bookInHistory.bookId);
+
+      setResultStatus(
+        bookInHistory.readerId === userInfoState.id ? "success" : "info"
+      );
+
+      setResultText(
+        bookInHistory.readerId === userInfoState.id
+          ? "You redding this book now"
+          : "This book already in use"
+      );
+      setButtonText(
+        bookInHistory.readerId === userInfoState.id
+          ? "Return"
+          : "Inform when appear"
+      );
+    }
+  }, [booksState]);
 
   const getAllAuthorBooksHandler = async (e) => {
     const authorName = e.target.lastChild.textContent;
@@ -51,10 +76,10 @@ function BookCard({ item }) {
           setResultText(data.message);
           setResultStatus("error");
         } else {
+          setBookIdFromHistory(item.id);
           setResultText("You successfully took the book");
           setResultStatus("success");
-          setReadingStatus("inRead");
-          setUserReadingStatus("inRead");
+          setButtonText("Return");
         }
       });
   }
@@ -81,13 +106,9 @@ function BookCard({ item }) {
         } else {
           setResultText("You successfully subscribe");
           setResultStatus("info");
-          setReadingStatus("waitingForRead");
         }
       });
   }
-
-  const cardButtonHandler =
-    readingStatus === "inRead" ? subscribeOnBookHandler : reserveBookHandler;
 
   return (
     <>
@@ -104,41 +125,24 @@ function BookCard({ item }) {
           <h3>{item.title}</h3>
         </div>
         <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
-          Author: {item.username}
+          Author: {item.authorName}
         </div>
         <br />
 
         <Button
-          onClick={(e) => {
-            cardButtonHandler(e);
-          }}
+          onClick={reserveBookHandler}
           type="primary"
           shape="round"
           size="small"
           data-book-id={item.id}>
-          {!readingStatus || readingStatus === "readyForRead"
-            ? "Read"
-            : "Inform when appear"}
+          Read
         </Button>
 
-        {resultStatus && (
+        {bookIdFromHistory === item.id ? (
           <Result
             className={styled.resultBanner}
             status={resultStatus}
             title={resultText}
-            // extra={
-            //   <Button type="primary" key="console">
-            //     Go Console
-            //   </Button>
-            // }
-          />
-        )}
-
-        {userReadingStatus ? (
-          <Result
-            className={styled.resultBanner}
-            status="info"
-            title="You redding this book now"
             extra={
               <>
                 <div label="Title">
@@ -147,13 +151,14 @@ function BookCard({ item }) {
                 <div
                   label="Author"
                   onClick={(e) => getAllAuthorBooksHandler(e)}>
-                  Author: {item.username}
+                  Author: {item.authorName}
                 </div>
                 <Button
+                  onClick={subscribeOnBookHandler}
                   type="primary"
                   block
                   className={styled.resultDescription}>
-                  Return a book
+                  {buttonText}
                 </Button>
               </>
             }

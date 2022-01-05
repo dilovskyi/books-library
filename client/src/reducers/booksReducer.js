@@ -2,6 +2,8 @@ export const booksInitialState = {
   chosenAuthor: null,
   chosenAuthorBooksData: null,
   allBooksData: [],
+  currentPageData: [],
+  currentPageDataReadingStatus: [],
 };
 
 export function booksReducer(state, action) {
@@ -12,6 +14,10 @@ export function booksReducer(state, action) {
       return { ...state, chosenAuthorBooksData: action.payload };
     case "chosenAuthor":
       return { ...state, chosenAuthor: action.payload };
+    case "currentPageData":
+      return { ...state, currentPageData: action.payload };
+    case "currentPageDataReadingStatus":
+      return { ...state, currentPageDataReadingStatus: action.payload };
     default:
       throw new Error();
   }

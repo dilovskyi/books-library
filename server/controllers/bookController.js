@@ -151,7 +151,7 @@ class BookController {
   async getBooksReadingStatus(req, res) {
     const booksIdArr = req.body;
     const data = await sequelize.query(
-      `SELECT readingStatus FROM readers_histories WHERE readers_histories.bookId IN (${booksIdArr.join(
+      `SELECT readerId, bookId, readingStatus FROM readers_histories WHERE readers_histories.bookId IN (${booksIdArr.join(
         ","
       )})`,
       {
