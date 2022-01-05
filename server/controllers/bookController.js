@@ -137,7 +137,7 @@ class BookController {
   async getByPage(req, res) {
     const currentPage = req.query.page;
     const book = await sequelize.query(
-      `SELECT books.Id, books.title, books.content, authors.username FROM books JOIN books_authors ON books_authors.bookId = books.id JOIN authors ON authors.id = books_authors.authorId ORDER BY books.id LIMIT ${
+      `SELECT books.*, authors.username AS authorName FROM books JOIN books_authors ON books_authors.bookId = books.id JOIN authors ON authors.id = books_authors.authorId ORDER BY books.id LIMIT ${
         currentPage - 1 + "0"
       },10`,
       {
@@ -146,6 +146,19 @@ class BookController {
     );
 
     res.json(book);
+  }
+
+  async getBooksReadingStatus(req, res) {
+    const booksIdArr = req.body;
+    const data = await sequelize.query(
+      `SELECT readingStatus FROM readers_histories WHERE readers_histories.bookId IN (${booksIdArr.join(
+        ","
+      )})`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+    res.json(data);
   }
 }
 

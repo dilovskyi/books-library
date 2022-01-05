@@ -7,5 +7,6 @@ router.get("/getAll", BookController.getAll);
 router.get("/getByPage", BookController.getByPage);
 router.get("/getByAuthor", BookController.getByAuthor);
 router.get("/getTopAuthors", BookController.getTopAuthors);
+router.post("/getBooksReadingStatus", BookController.getBooksReadingStatus);
 
 module.exports = router;
