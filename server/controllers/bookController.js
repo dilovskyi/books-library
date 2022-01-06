@@ -11,9 +11,8 @@ class BookController {
 
     const author = await sequelize
       .query(
-        `SELECT count(*) as booksTotal, authors.username, books_authors.authorId FROM authors JOIN books_authors ON authors.id = books_authors.authorId GROUP BY username ORDER BY booksTotal DESC`,
+        `SELECT count(*) as booksTotal, authors.username, books_authors.authorId FROM authors JOIN books_authors ON authors.id = books_authors.authorId GROUP BY username ORDER BY booksTotal DESC LIMIT 0, ${authorsCount}`,
         {
-          replacements: { authorsCount },
           type: sequelize.QueryTypes.SELECT,
           plain: false,
           nest: true,
