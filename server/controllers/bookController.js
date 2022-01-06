@@ -170,6 +170,17 @@ class BookController {
     );
     res.json(data);
   }
+
+  async bookQueue(req, res) {
+    const bookId = req.query.bookId;
+    const data = await sequelize.query(
+      `SELECT count(*) as bookQueue, readers_histories.readerId FROM readers_histories WHERE bookId = ${bookId} AND readingStatus = "waitingForRead"`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+    res.json(data);
+  }
 }
 
 module.exports = new BookController();

@@ -9,5 +9,6 @@ router.get("/getByAuthor", BookController.getByAuthor);
 router.get("/getTopAuthors", BookController.getTopAuthors);
 router.post("/getBooksReadingStatus", BookController.getBooksReadingStatus);
 router.get("/getWaitingForReadBooks", BookController.getWaitingForReadBooks);
+router.get("/bookQueue", BookController.bookQueue);
 
 module.exports = router;
