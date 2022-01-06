@@ -26,11 +26,11 @@ class BookController {
   }
 
   async getByAuthor(req, res) {
-    const authorName = req.query.name.replace("_", " ");
+    const authorId = req.query.authorId;
 
     const author = await sequelize
-      .query("SELECT id, username FROM authors WHERE username = :authorName", {
-        replacements: { authorName },
+      .query("SELECT id, username FROM authors WHERE id = :authorId", {
+        replacements: { authorId },
         type: sequelize.QueryTypes.SELECT,
       })
       .then(function (author) {
@@ -134,9 +134,9 @@ class BookController {
   }
 
   async getByPage(req, res) {
-    const currentPage = req.query.page;
+    const currentPage = req.query.page || 3;
     const book = await sequelize.query(
-      `SELECT books.*, authors.username AS authorName FROM books JOIN books_authors ON books_authors.bookId = books.id JOIN authors ON authors.id = books_authors.authorId ORDER BY books.id LIMIT ${
+      `SELECT books.*, authors.id AS authorId, authors.username AS authorName FROM books JOIN books_authors ON books_authors.bookId = books.id JOIN authors ON authors.id = books_authors.authorId ORDER BY books.id LIMIT ${
         currentPage - 1 + "0"
       },10`,
       {

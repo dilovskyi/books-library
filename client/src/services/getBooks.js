@@ -11,10 +11,9 @@ export async function getAllBooksData(readerId) {
   return data;
 }
 
-export async function getAuthorAllBooksData(authorName) {
-  const authorQueryName = authorName.replace(" ", "_");
+export async function getAuthorAllBooksData(authorId) {
   const data = await fetch(
-    `http://192.168.0.173:8080/book/getByAuthor?name=${authorQueryName}`
+    `http://192.168.0.173:8080/book/getByAuthor?authorId=${authorId}`
   )
     .then((res) => {
       return res.json();

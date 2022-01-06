@@ -47,13 +47,16 @@ function BookCard({ item }) {
   }, [booksState]);
 
   const getAllAuthorBooksHandler = async (e) => {
-    const authorName = e.target.lastChild.textContent;
+    const authorId = e.target.getAttribute("data-author-id");
+    if (authorId) {
+      const authorName = e.target.lastChild.textContent;
 
-    booksDispatch({
-      type: "chosenAuthorBooksData",
-      payload: await getAuthorAllBooksData(authorName),
-    });
-    booksDispatch({ type: "chosenAuthor", payload: authorName });
+      booksDispatch({
+        type: "chosenAuthorBooksData",
+        payload: await getAuthorAllBooksData(authorId),
+      });
+      booksDispatch({ type: "chosenAuthor", payload: authorName });
+    }
   };
 
   async function reserveBookHandler(event) {
@@ -124,7 +127,10 @@ function BookCard({ item }) {
         <div label="Title">
           <h3>{item.title}</h3>
         </div>
-        <div label="Author" onClick={(e) => getAllAuthorBooksHandler(e)}>
+        <div
+          onClick={(e) => getAllAuthorBooksHandler(e)}
+          label="Author"
+          data-author-id={item.authorId}>
           Author: {item.authorName}
         </div>
         <br />
@@ -149,6 +155,7 @@ function BookCard({ item }) {
                   <h3>{item.title}</h3>
                 </div>
                 <div
+                  data-author-id={item.authorId}
                   label="Author"
                   onClick={(e) => getAllAuthorBooksHandler(e)}>
                   Author: {item.authorName}
