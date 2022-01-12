@@ -17,6 +17,14 @@ function Header() {
   const openModalHandler = (modalType) =>
     authModalDispatch({ type: "openModal", modalType: modalType });
 
+  const closeTagHandler = () => {
+    booksDispatch({ type: "chosenAuthorBooksData", payload: null });
+    booksDispatch({
+      type: "chosenAuthorBooksDataLength",
+      payload: 0,
+    });
+  };
+
   return (
     <PageHeader
       className={styles.header}
@@ -67,9 +75,7 @@ function Header() {
           <Tag
             closable
             visible={!!booksState.chosenAuthorBooksData}
-            onClose={() =>
-              booksDispatch({ type: "chosenAuthorBooksData", payload: null })
-            }>
+            onClose={closeTagHandler}>
             {booksState.chosenAuthor}
           </Tag>
         </div>

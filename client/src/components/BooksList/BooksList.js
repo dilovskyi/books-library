@@ -1,13 +1,12 @@
 import { useEffect, useContext, useState } from "react";
 import { List, Spin } from "antd";
 
-import { BooksContext } from "../../hoc/AppContext";
-import { UserInfoContext } from "../../hoc/AppContext";
+import { BooksContext, UserInfoContext } from "../../hoc/AppContext";
 
 import BookCard from "./BookCard/BookCard";
 import PagePagination from "../PagePagination/PagePagination";
 
-import { getAllBooksData, getBooksDataByPage } from "../../services/getBooks";
+import { getBooksDataByPage } from "../../services/getBooks";
 import { getBooksReadingStatus } from "../../services/getBooksReadingStatus";
 
 function BooksList() {
@@ -17,20 +16,15 @@ function BooksList() {
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [listPage, setListPage] = useState(1);
 
-  const { chosenAuthorBooksData, allBooksData, currentPageData } = booksState;
+  const { chosenAuthorBooksData, currentPageData } = booksState;
 
-  //FIXME:
   useEffect(() => {
     if (userInfoState.id) {
       (async () => {
-        booksDispatch({
-          type: "allBooksData",
-          payload: await getAllBooksData(userInfoState.id),
-        });
-
+        const data = await getBooksDataByPage(userInfoState.id, listPage);
         booksDispatch({
           type: "currentPageData",
-          payload: await getBooksDataByPage(userInfoState.id, listPage),
+          payload: await data,
         });
 
         setLoadingStatus(true);
@@ -54,7 +48,6 @@ function BooksList() {
     setListPage(currentPage);
   };
 
-  const actualDataLenght = (chosenAuthorBooksData || allBooksData).length;
   const actualData = chosenAuthorBooksData || currentPageData;
 
   return (
@@ -63,7 +56,6 @@ function BooksList() {
         <>
           <PagePagination
             defaultPage={listPage}
-            dataLength={actualDataLenght}
             onChangeHandler={setCurrentPageHandler}
           />
           <List

@@ -61,76 +61,22 @@ class BookController {
       })
     );
 
-    res.json(authorBooks);
+    res.json({
+      chosenAuthorBooksData: authorBooks,
+      chosenAuthorBooksDataLength: authorBooks.length,
+    });
   }
 
-  async getAll(req, res) {
-    const booksAuthors = await sequelize
-      .query("SELECT * FROM `books_authors`", {
+  async getTotalDataLength(req, res) {
+    const booksTotal = await sequelize
+      .query("SELECT count(*) as booksTotal FROM `books`", {
         type: sequelize.QueryTypes.SELECT,
       })
       .then(function (booksAuthors) {
-        return booksAuthors;
+        return booksAuthors[0];
       });
 
-    // Iterate thow books_authors with tables authorId, bookId
-    const booksData = await Promise.all(
-      booksAuthors.map(async ({ authorId, bookId }) => {
-        // Get book by id
-        const book = await sequelize
-          .query("SELECT * FROM `books` WHERE id = :bookId", {
-            replacements: { bookId },
-            type: sequelize.QueryTypes.SELECT,
-          })
-          .then(function (book) {
-            return book[0];
-          });
-
-        // Get author by id
-        const author = await sequelize
-          .query("SELECT * FROM `authors` WHERE id = :authorId", {
-            replacements: { authorId },
-            type: sequelize.QueryTypes.SELECT,
-          })
-          .then(function (author) {
-            return author[0];
-          });
-
-        const readingStatus = await sequelize
-          .query(
-            "SELECT readingStatus FROM readers_histories WHERE bookId = :bookId",
-            {
-              replacements: { bookId },
-              type: sequelize.QueryTypes.SELECT,
-            }
-          )
-          .then(function (status) {
-            return status[0];
-          });
-
-        const readerId = req.query.reader;
-        const currentUserReadingStatus = await sequelize
-          .query(
-            "SELECT readingStatus as userReadingStatus FROM readers_histories WHERE bookId = :bookId and readerId = :readerId",
-            {
-              replacements: { bookId, readerId },
-              type: sequelize.QueryTypes.SELECT,
-            }
-          )
-          .then(function (status) {
-            return status[0];
-          });
-
-        return {
-          ...book,
-          ...readingStatus,
-          ...currentUserReadingStatus,
-          username: author.username,
-        };
-      })
-    );
-
-    res.json(booksData.flat());
+    res.json(booksTotal);
   }
 
   async getByPage(req, res) {
