@@ -81,10 +81,11 @@ class BookController {
 
   async getByPage(req, res) {
     const currentPage = req.query.page || 3;
+    const limit = req.query.limit;
     const book = await sequelize.query(
       `SELECT books.*, authors.id AS authorId, authors.username AS authorName FROM books JOIN books_authors ON books_authors.bookId = books.id JOIN authors ON authors.id = books_authors.authorId ORDER BY books.id LIMIT ${
         currentPage - 1 + "0"
-      },10`,
+      },${limit}`,
       {
         type: sequelize.QueryTypes.SELECT,
       }

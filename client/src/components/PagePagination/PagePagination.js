@@ -4,9 +4,14 @@ import { Pagination } from "antd";
 import { BooksContext } from "../../hoc/AppContext";
 import { ajax } from "rxjs/ajax";
 
-function PagePagination({ defaultPage, onChangeHandler }) {
+function PagePagination() {
   const { booksState, booksDispatch } = useContext(BooksContext);
-  const { chosenAuthorBooksDataLength, totalDataLength } = booksState;
+  const {
+    chosenAuthorBooksDataLength,
+    totalDataLength,
+    dataLengthLimit,
+    currentListPage,
+  } = booksState;
   const actualDataLength = chosenAuthorBooksDataLength || totalDataLength;
 
   useEffect(() => {
@@ -21,16 +26,31 @@ function PagePagination({ defaultPage, onChangeHandler }) {
     });
   }, []);
 
+  function onChangeHandler(current, pageSize) {
+    if (currentListPage !== current) {
+      booksDispatch({
+        type: "currentListPage",
+        payload: current,
+      });
+    } else if (dataLengthLimit !== pageSize) {
+      booksDispatch({
+        type: "dataLengthLimit",
+        payload: pageSize,
+      });
+    }
+  }
+
   return (
     <div>
       <Pagination
-        current={defaultPage}
+        current={currentListPage}
         total={actualDataLength}
         showTotal={(total, range) =>
           `${range[0]}-${range[1]} of ${total} items`
         }
         onChange={onChangeHandler}
-        showSizeChanger={false}
+        onShowSizeChange={onChangeHandler}
+        showSizeChanger
       />
     </div>
   );

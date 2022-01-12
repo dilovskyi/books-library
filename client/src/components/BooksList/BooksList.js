@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext } from "react";
 import { List, Spin } from "antd";
 
 import { BooksContext, UserInfoContext } from "../../hoc/AppContext";
@@ -13,24 +13,30 @@ function BooksList() {
   const { booksState, booksDispatch } = useContext(BooksContext);
   const { userInfoState } = useContext(UserInfoContext);
 
-  const [loadingStatus, setLoadingStatus] = useState(false);
-  const [listPage, setListPage] = useState(1);
-
-  const { chosenAuthorBooksData, currentPageData } = booksState;
+  const {
+    isLoaded,
+    chosenAuthorBooksData,
+    currentPageData,
+    dataLengthLimit,
+    currentListPage,
+  } = booksState;
 
   useEffect(() => {
     if (userInfoState.id) {
       (async () => {
-        const data = await getBooksDataByPage(userInfoState.id, listPage);
+        const data = await getBooksDataByPage(currentListPage, dataLengthLimit);
         booksDispatch({
           type: "currentPageData",
           payload: await data,
         });
 
-        setLoadingStatus(true);
+        booksDispatch({
+          type: "isLoaded",
+          payload: true,
+        });
       })();
     }
-  }, [booksDispatch, listPage, userInfoState]);
+  }, [booksDispatch, currentListPage, userInfoState, dataLengthLimit]);
 
   useEffect(() => {
     if (currentPageData.length) {
@@ -44,20 +50,13 @@ function BooksList() {
     }
   }, [booksDispatch, currentPageData]);
 
-  const setCurrentPageHandler = async (currentPage) => {
-    setListPage(currentPage);
-  };
-
   const actualData = chosenAuthorBooksData || currentPageData;
 
   return (
     <>
-      {loadingStatus ? (
+      {isLoaded ? (
         <>
-          <PagePagination
-            defaultPage={listPage}
-            onChangeHandler={setCurrentPageHandler}
-          />
+          <PagePagination />
           <List
             grid={{
               gutter: 16,

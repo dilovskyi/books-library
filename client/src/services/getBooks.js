@@ -22,9 +22,9 @@ export async function getAuthorAllBooksData(authorId) {
   return data;
 }
 
-export async function getBooksDataByPage(readerId, currentPage) {
+export async function getBooksDataByPage(currentPage, limit) {
   const data = await fetch(
-    `http://192.168.0.173:8080/book/getByPage?reader=${readerId}&page=${currentPage}`
+    `http://192.168.0.173:8080/book/getByPage?page=${currentPage}&limit=${limit}`
   )
     .then((res) => {
       return res.json();
