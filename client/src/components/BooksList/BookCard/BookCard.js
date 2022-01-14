@@ -22,27 +22,34 @@ function BookCard({ item }) {
   useEffect(() => {
     const { currentPageDataReadingStatus } = booksState;
 
-    const bookInHistory = currentPageDataReadingStatus.find(
-      (bookOnThePage) => bookOnThePage?.bookId === item.id
+    const currentBookInHistory = currentPageDataReadingStatus.find(
+      (bookInHistory) => bookInHistory?.bookId === item.id
     );
 
-    if (bookInHistory) {
-      setBookIdFromHistory(bookInHistory.bookId);
+    if (currentBookInHistory) {
+      setBookIdFromHistory(currentBookInHistory.bookId);
 
-      setResultStatus(
-        bookInHistory.readerId === userInfoState.id ? "success" : "info"
-      );
-
-      setResultText(
-        bookInHistory.readerId === userInfoState.id
-          ? "You redding this book now"
-          : "This book already in use"
-      );
-      setButtonText(
-        bookInHistory.readerId === userInfoState.id
-          ? "Return"
-          : "Inform when appear"
-      );
+      switch (currentBookInHistory.readingStatus) {
+        case "waitingForRead":
+          if (currentBookInHistory.readerId === userInfoState.id) {
+            setResultStatus("info");
+            setResultText("You waiting this book");
+          }
+          break;
+        case "inRead":
+          if (currentBookInHistory.readerId === userInfoState.id) {
+            setResultText("You redding this book now");
+            setResultStatus("success");
+            setButtonText("Return");
+          } else {
+            setResultText("This book already in read");
+            setResultStatus("info");
+            setButtonText("Inform when appear");
+          }
+          break;
+        default:
+          return "This book already in use";
+      }
     }
   }, [booksState]);
 
@@ -51,11 +58,20 @@ function BookCard({ item }) {
     if (authorId) {
       const authorName = e.target.lastChild.textContent;
 
-      booksDispatch({
-        type: "chosenAuthorBooksData",
-        payload: await getAuthorAllBooksData(authorId),
+      //FIXME: Need rxjs
+      await getAuthorAllBooksData(authorId).then((data) => {
+        booksDispatch({
+          type: "chosenAuthorBooksDataLength",
+          payload: data.chosenAuthorBooksDataLength,
+        });
+
+        booksDispatch({
+          type: "chosenAuthorBooksData",
+          payload: data.chosenAuthorBooksData,
+        });
+
+        booksDispatch({ type: "chosenAuthor", payload: authorName });
       });
-      booksDispatch({ type: "chosenAuthor", payload: authorName });
     }
   };
 
@@ -108,7 +124,7 @@ function BookCard({ item }) {
           setResultStatus("error");
         } else {
           setResultText("You successfully subscribe");
-          setResultStatus("info");
+          setResultStatus("success");
         }
       });
   }
@@ -161,6 +177,7 @@ function BookCard({ item }) {
                   Author: {item.authorName}
                 </div>
                 <Button
+                  data-book-id={item.id}
                   onClick={subscribeOnBookHandler}
                   type="primary"
                   block
